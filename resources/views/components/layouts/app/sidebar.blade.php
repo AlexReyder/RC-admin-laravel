@@ -22,7 +22,7 @@
                         Dashboard
                     </flux:navlist.item>
 
-                    @if (auth()->user()->isSuperadmin())
+                    @if (auth()->user()->isAdmin())
                         <flux:navlist.item
                             icon="user-group"
                             :href="route('admin.users.index')"

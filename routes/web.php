@@ -15,7 +15,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('dashboard');
 
     Volt::route('users', 'admin.users.index')
-        ->middleware(['auth', 'role:superadmin'])
+        ->middleware(['auth', 'role:superadmin,admin'])
         ->name('users.index');
 });
 

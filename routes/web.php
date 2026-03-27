@@ -9,7 +9,7 @@ Route::get('/', function () {
 
 Route::redirect('dashboard', 'admin');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(\App\Http\Middleware\SetAdminLocale::class)->group(function () {
     Route::view('/', 'dashboard')
         ->middleware(['auth', 'role:superadmin,admin'])
         ->name('dashboard');

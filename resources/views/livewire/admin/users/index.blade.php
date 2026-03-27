@@ -8,6 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
+use Flux\Flux;
 
 new
 #[Layout('components.layouts.app')]
@@ -69,12 +70,36 @@ class extends Component {
 
     public function createUser(): void
     {
-        $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'role' => ['required', Rule::in($this->availableRoleValues())],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        $validated = $this->validate(
+    [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+        'role' => ['required', Rule::in($this->availableRoleValues())],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+    ],
+    [
+        'name.required' => 'Введите имя пользователя.',
+        'name.max' => 'Имя пользователя не должно превышать 255 символов.',
+
+        'email.required' => 'Введите email.',
+        'email.email' => 'Введите корректный email.',
+        'email.max' => 'Email не должен превышать 255 символов.',
+        'email.unique' => 'Пользователь с таким email уже существует.',
+
+        'role.required' => 'Выберите роль пользователя.',
+        'role.in' => 'Выбрана недопустимая роль.',
+
+        'password.required' => 'Введите пароль.',
+        'password.min' => 'Пароль должен содержать не менее 8 символов.',
+        'password.confirmed' => 'Подтверждение пароля не совпадает.',
+    ],
+    [
+        'name' => 'имя',
+        'email' => 'email',
+        'role' => 'роль',
+        'password' => 'пароль',
+    ],
+);
 
         User::create([
             'name' => $validated['name'],
@@ -85,7 +110,11 @@ class extends Component {
 
         $this->closeCreateModal();
 
-        session()->flash('status', 'Пользователь успешно создан.');
+        Flux::toast(
+            heading: 'Успешно',
+            text: 'Пользователь успешно создан.',
+            variant: 'success',
+        );
     }
 
     public function confirmDelete(int $userId): void
@@ -97,7 +126,11 @@ class extends Component {
         }
 
         if ($user->is(auth()->user())) {
-            $this->addError('delete', 'Нельзя удалить текущего пользователя.');
+             Flux::toast(
+                heading: 'Ошибка',
+                text: 'Нельзя удалить текущего пользователя.',
+                variant: 'danger',
+            );
             return;
         }
 
@@ -128,8 +161,12 @@ class extends Component {
         }
 
         if ($user->is(auth()->user())) {
-            $this->addError('delete', 'Нельзя удалить текущего пользователя.');
             $this->cancelDelete();
+             Flux::toast(
+                heading: 'Ошибка',
+                text: 'Нельзя удалить текущего пользователя.',
+                variant: 'danger',
+            );
             return;
         }
 
@@ -137,7 +174,11 @@ class extends Component {
 
         $this->cancelDelete();
 
-        session()->flash('status', 'Пользователь удалён.');
+        Flux::toast(
+            heading: 'Успешно',
+            text: 'Пользователь удалён.',
+            variant: 'success',
+        );
     }
 
     public function with(): array
@@ -156,7 +197,7 @@ class extends Component {
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->simplePaginate(10);
 
         return [
             'users' => $users,
@@ -224,17 +265,7 @@ class extends Component {
         </div>
     </div>
 
-    @if (session('status'))
-        <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
-            {{ session('status') }}
-        </div>
-    @endif
 
-    @error('delete')
-        <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-300">
-            {{ $message }}
-        </div>
-    @enderror
 
     <div class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs dark:border-zinc-700 dark:bg-zinc-900">
         <flux:table :paginate="$users">

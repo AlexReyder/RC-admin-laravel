@@ -7,28 +7,35 @@
         <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('dashboard') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
+            <a href="{{ route('admin.dashboard') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home-modern" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Квартиры</flux:navlist.item>
-                    <flux:navlist.item icon="user" :href="route('dashboard')" :current="request()->routeIs('users')" wire:navigate>Пользователи</flux:navlist.item>
+                <flux:navlist.group heading="Админка" class="grid">
+                    <flux:navlist.item
+                        icon="home-modern"
+                        :href="route('admin.dashboard')"
+                        :current="request()->routeIs('admin.dashboard')"
+                        wire:navigate
+                    >
+                        Dashboard
+                    </flux:navlist.item>
+
+                    @if (auth()->user()->isSuperadmin())
+                        <flux:navlist.item
+                            icon="user-group"
+                            :href="route('admin.users.index')"
+                            :current="request()->routeIs('admin.users.*')"
+                            wire:navigate
+                        >
+                            Пользователи
+                        </flux:navlist.item>
+                    @endif
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    Repository
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
-                    Documentation
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

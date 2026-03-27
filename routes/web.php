@@ -7,9 +7,17 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::redirect('dashboard', 'admin');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::view('/', 'dashboard')
+        ->middleware(['auth', 'role:superadmin,admin'])
+        ->name('dashboard');
+
+    Volt::route('users', 'admin.users.index')
+        ->middleware(['auth', 'role:superadmin'])
+        ->name('users.index');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

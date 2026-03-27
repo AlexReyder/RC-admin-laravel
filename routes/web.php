@@ -17,6 +17,10 @@ Route::prefix('admin')->name('admin.')->middleware(\App\Http\Middleware\SetAdmin
     Volt::route('users', 'admin.users.index')
         ->middleware(['auth', 'role:superadmin,admin'])
         ->name('users.index');
+    
+    Volt::route('flats', 'admin.flats.index')
+            ->middleware(['auth', 'role:superadmin,admin'])
+            ->name('flats.index');
 });
 
 Route::middleware(['auth'])->group(function () {

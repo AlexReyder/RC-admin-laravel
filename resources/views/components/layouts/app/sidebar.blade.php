@@ -14,12 +14,20 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Админка" class="grid">
                     <flux:navlist.item
-                        icon="home-modern"
+                        icon="chart-pie"
                         :href="route('admin.dashboard')"
                         :current="request()->routeIs('admin.dashboard')"
                         wire:navigate
                     >
-                        Dashboard
+                        Сводка
+                    </flux:navlist.item>
+                     <flux:navlist.item
+                        icon="home-modern"
+                        :href="route('admin.flats.index')"
+                        :current="request()->routeIs('admin.flats.*')"
+                        wire:navigate
+                    >
+                        Квартиры
                     </flux:navlist.item>
 
                     @if (auth()->user()->isAdmin())

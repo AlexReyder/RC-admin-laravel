@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Flat;
+use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
@@ -37,6 +38,33 @@ class extends Component {
         $this->resetPage();
     }
 
+    public function editFlat(int $flatId): void
+    {
+        Flux::toast(
+            heading: 'Подготовлено',
+            text: "Редактирование квартиры #{$flatId} подключим следующим шагом.",
+            variant: 'success',
+        );
+    }
+
+    public function hideFlat(int $flatId): void
+    {
+        Flux::toast(
+            heading: 'Подготовлено',
+            text: "Скрытие квартиры #{$flatId} подключим следующим шагом.",
+            variant: 'success',
+        );
+    }
+
+    public function deleteFlat(int $flatId): void
+    {
+        Flux::toast(
+            heading: 'Подготовлено',
+            text: "Удаление квартиры #{$flatId} подключим следующим шагом.",
+            variant: 'danger',
+        );
+    }
+
     public function with(): array
     {
         $search = trim($this->search);
@@ -65,7 +93,7 @@ class extends Component {
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->simplePaginate(10);
+            ->paginate(15);
 
         return [
             'flats' => $flats,
@@ -96,7 +124,6 @@ class extends Component {
     <div class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs dark:border-zinc-700 dark:bg-zinc-900">
         <flux:table :paginate="$flats">
             <flux:table.columns>
-
                 <flux:table.column
                     sortable
                     :sorted="$sortBy === 'building'"
@@ -149,12 +176,13 @@ class extends Component {
                 <flux:table.column>
                     Статус
                 </flux:table.column>
+
+                <flux:table.column align="end"></flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($flats as $flat)
                     <flux:table.row :key="$flat->id">
-
                         <flux:table.cell>
                             {{ $flat->building }}
                         </flux:table.cell>
@@ -189,6 +217,44 @@ class extends Component {
                                     Доступна
                                 </flux:badge>
                             @endif
+                        </flux:table.cell>
+
+                        <flux:table.cell align="end">
+                            <flux:dropdown position="bottom" align="end">
+                                <flux:button
+                                    variant="ghost"
+                                    size="sm"
+                                    square
+                                    icon="ellipsis-vertical"
+                                    inset="top bottom"
+                                />
+
+                                <flux:menu>
+                                    <flux:menu.item
+                                        icon="pencil-square"
+                                        wire:click="editFlat({{ $flat->id }})"
+                                    >
+                                        Редактировать
+                                    </flux:menu.item>
+
+                                    <flux:menu.item
+                                        icon="eye-slash"
+                                        wire:click="hideFlat({{ $flat->id }})"
+                                    >
+                                        Скрыть
+                                    </flux:menu.item>
+
+                                    <flux:menu.separator />
+
+                                    <flux:menu.item
+                                        variant="danger"
+                                        icon="trash"
+                                        wire:click="deleteFlat({{ $flat->id }})"
+                                    >
+                                        Удалить
+                                    </flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
                         </flux:table.cell>
                     </flux:table.row>
                 @empty

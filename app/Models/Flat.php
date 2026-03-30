@@ -9,6 +9,7 @@ class Flat extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
     protected $table = 'flats';
 
     protected $fillable = [
